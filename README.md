@@ -1,5 +1,4 @@
 # Perscholas_Capstone_Project
-visualization_branch
 # Overview
 The purpose of this data engineering project is to provide the opportuniy to demonstrate and combine the knowledge ans skills I have aquired throughout this course.  
 In this project I will be working with multiple technologies to manage an ETL (Extraction, Transformation, Loading) process for a Loan Application dataset and a Credit Card dataset that was provided.

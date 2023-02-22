@@ -357,6 +357,18 @@ def modify_account_details():
         print("Customer's name not found in records")  
     with open(r'C:\Users\Learner_XZHCG221\Perscholas_Capstone_Project\clean_cdw_sapp_customer.json', 'w') as cust_file:
         json.dump(customers, cust_file, indent=4)
+    #this will ignore corrupt records and keep originial schema
+    modifydf = spark.read.option('mode', 'PERMISSIVE').option('columnnameOfcorruptrecord', '_corrupt_record').json('clean_cdw_sapp_customer.json', multiLine=True)
+    modifydf.printSchema()
+    modifydf.cache()
+    
+    modifydf.write.format("jdbc") \
+        .mode("overwrite") \
+        .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
+        .option("dbtable", "cdw_sapp_customer") \
+        .option("user", username) \
+        .option("password", my_password) \
+        .save()
 #modify_account_details()
 
 
@@ -388,7 +400,6 @@ def generate_monthly_bill():
 #generate_monthly_bill()
 
 def display_transaction_between_two_dates():
-    import datetime
     import json
     with open('cleaned_cdw_sapp_credit_customer.json') as credit: #open json
         transactions= json.load(credit)
@@ -429,8 +440,8 @@ def highest_transaction_rate():
     ax=plt.gca()#get axis
     ax.set_frame_on(False)#turn off spines
     plt.tick_params(bottom = False, left= False)
-    plt.xlabel('Transaction Type')
-    plt.ylabel('Number of Transactions')
+    plt.xlabel('Number of Transactions')
+    plt.ylabel('Transaction Type')
     plt.title('Transaction Type vs Number of Transactions')
     plt.subplot().set_xlim([6000, 7000]) #zoom in to see the differenct more
     plt.show()

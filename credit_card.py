@@ -310,46 +310,52 @@ def modify_account_details():
             print('4. Address')
             print('5. Social Security')
             #modify the selected account detail of the customer
-            choice= input('Type number of choice')
-            if choice == '1':
+            choice= int(input('Type number of choice'))
+            if choice == 1:
                 new_phone_number= input("Enter phone number (XXX)XXX-XXXX:")
                 customer['CUST_PHONE']= new_phone_number
                 print('Phone number updated successfully')
-            elif choice == '2':
+            elif choice == 2:
                 new_email= input('Enter email address:')
                 customer['CUST_EMAIL']= new_email
                 print('Email updated successfully')
-            elif choice == '3':
+            elif choice == 3:
                 new_cc= input('Enter cc number:')
                 customer['CREDIT_CARD_NO']= new_cc
                 print('Credit Card Number updated successfully')
-            elif choice == '4':
+            elif choice == 4:
                 print('Select address detail to modify...')
                 print('1. Full Street Address')
                 print('2. City')
                 print('3. State')
                 print('4. Zip Code')
-                choice2 = input('Type choice:')
-                if choice2 == '1':
+                choice2 = int(input('Type choice:'))
+                if choice2 == 1:
                     new_street_address = input('Enter full street address:')
                     customer['FULL_STREET_ADDRESS']=new_street_address
                     print('Street Address updated successfully')
-                elif choice2 == '2':
+                elif choice2 == 2:
                     new_city= input('Enter City:')
                     customer['CUST_CITY']=new_city
                     print('City updated successfully')
-                elif choice2 == '3':
+                elif choice2 == 3:
                     new_state= input('Enter State:')
-                    customer['CUST_STATE']=new_state
-                    print('State updated successfully')
-                elif choice2 == '4':
-                    new_zipcode= input('Enter Zip Code:')
+                    if len(new_state) == 2:
+                        customer['CUST_STATE']=new_state
+                        print('State updated successfully')
+                    else:
+                        print('Please Enter Customers 2 Sharachter State')
+                elif choice2 == 4:
+                    new_zipcode= int(input('Enter Zip Code:'))
                     customer['CUST_ZIP']=new_zipcode
                     print('Zip Code updated successfully')
-            elif choice == '5':
+            elif choice == 5:
                 new_ss= input('Enter Social Security Number (XXXXXXXXX): ')
-                customer['SSN']= new_ss
-                print('Social Security Number updated successfully')
+                if len(new_ss) == 9:
+                    customer['SSN']= new_ss
+                    print('Social Security Number updated successfully')
+                else:
+                    print('Please enter Customers 9 digit Social Security Number')
             else:
                 print('Invalid choice')
             break
@@ -362,6 +368,7 @@ def modify_account_details():
     modifydf.printSchema()
     modifydf.cache()
     
+
     modifydf.write.format("jdbc") \
         .mode("overwrite") \
         .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
@@ -369,6 +376,7 @@ def modify_account_details():
         .option("user", username) \
         .option("password", my_password) \
         .save()
+    
 #modify_account_details()
 
 

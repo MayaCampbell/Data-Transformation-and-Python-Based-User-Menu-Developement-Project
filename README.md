@@ -74,7 +74,7 @@ Lastly I loaded spark dataframe to MYSQL by creating a MYSQL connection and appe
 ![image](https://user-images.githubusercontent.com/112674624/220772476-d5e646b6-869f-4871-99da-2f70e8ab0fe3.png)
 
 ## Graph 4: Find and plot which branch processed the highest total dollar value of healthcare transactions.
-![image](https://user-images.githubusercontent.com/112674624/220772696-66b1cf73-d5cb-466e-ba75-6898970b000a.png)
+![image](https://user-images.githubusercontent.com/112674624/221658727-aa488d73-8786-43d5-b96d-05fc0a075d13.png)
 
 # Creating Front End User Menu
 First I imported pyinputplus and used nested while loops and if, elif, annd else statements for users to be able to maneuver through menu options.

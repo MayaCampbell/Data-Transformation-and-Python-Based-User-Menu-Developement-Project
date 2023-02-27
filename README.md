@@ -45,13 +45,13 @@ Goal of this section is to create a console-based Python program to Satisfy the 
 
 # Data Analysis and Visualization
 ## Graph 1: Find and plot which transaction type has a high rate of transactions.
-![image](https://user-images.githubusercontent.com/112674624/220770435-26bba3ad-2cc6-4406-bbad-ba2d503b26cf.png)
+![image](https://user-images.githubusercontent.com/112674624/221659579-1b3a09fe-eadf-44a6-be3f-80363f746d87.png)
 
 ## Graph 2: Find and plot which state has a high number of customers.
-![image](https://user-images.githubusercontent.com/112674624/220770738-20335ebf-f368-4af3-8935-449d31a852f1.png)
+![image](https://user-images.githubusercontent.com/112674624/221659688-540dd5ca-877d-4f98-8e84-0038f9503830.png)
 
-## Graph3: Find and plot the sum of all transactions for each customer, and which customer has the highest transaction amount. hint(use CUST_SSN).
-![image](https://user-images.githubusercontent.com/112674624/220770853-f63e795f-42a7-4d83-8dad-c9ab516278d8.png)
+## Graph3: Find and plot the sum of all transactions for each customer, and which customer has the highest transaction amount.
+![image](https://user-images.githubusercontent.com/112674624/221658019-c467a14a-07d9-4ead-a8c0-bb9ba29859ba.png)
 
 # Loan Application API
 ## Step 1:
@@ -65,16 +65,16 @@ Lastly I loaded spark dataframe to MYSQL by creating a MYSQL connection and appe
 
 # Data Analysis and Visualization for Loan Application
 ## Graph 1: Find and plot the percentage of applications approved for self-employed applicants.
-![image](https://user-images.githubusercontent.com/112674624/220772233-cccc46f3-7e68-4013-a8e7-abd34e77e6d5.png)
+![image](https://user-images.githubusercontent.com/112674624/221660169-add1674a-405e-4ff7-a8dd-f9d1d81c60ff.png)
 
 ## Graph 2: Find the percentage of rejection for married male applicants.
-![image](https://user-images.githubusercontent.com/112674624/220772348-7ddd62e9-87f1-48bf-b1a2-7b2e565c32a2.png)
+![image](https://user-images.githubusercontent.com/112674624/221660235-586b23f1-77f9-4da5-bb78-aeb72e7f2620.png)
 
 ## Graph 3: Find and plot the top three months with the largest transaction data.
-![image](https://user-images.githubusercontent.com/112674624/220772476-d5e646b6-869f-4871-99da-2f70e8ab0fe3.png)
+![image](https://user-images.githubusercontent.com/112674624/221660305-80719a38-146c-452f-a777-ad922b799507.png)
 
 ## Graph 4: Find and plot which branch processed the highest total dollar value of healthcare transactions.
-![image](https://user-images.githubusercontent.com/112674624/220772696-66b1cf73-d5cb-466e-ba75-6898970b000a.png)
+![image](https://user-images.githubusercontent.com/112674624/221658727-aa488d73-8786-43d5-b96d-05fc0a075d13.png)
 
 # Creating Front End User Menu
 First I imported pyinputplus and used nested while loops and if, elif, annd else statements for users to be able to maneuver through menu options.

@@ -50,8 +50,8 @@ Goal of this section is to create a console-based Python program to Satisfy the 
 ## Graph 2: Find and plot which state has a high number of customers.
 ![image](https://user-images.githubusercontent.com/112674624/220770738-20335ebf-f368-4af3-8935-449d31a852f1.png)
 
-## Graph3: Find and plot the sum of all transactions for each customer, and which customer has the highest transaction amount. hint(use CUST_SSN).
-![image](https://user-images.githubusercontent.com/112674624/220770853-f63e795f-42a7-4d83-8dad-c9ab516278d8.png)
+## Graph3: Find and plot the sum of all transactions for each customer, and which customer has the highest transaction amount.
+![image](https://user-images.githubusercontent.com/112674624/221658019-c467a14a-07d9-4ead-a8c0-bb9ba29859ba.png)
 
 # Loan Application API
 ## Step 1:

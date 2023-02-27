@@ -1,3 +1,8 @@
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import pyinputplus as pyip
+
 import findspark
 findspark.init()
 
@@ -6,203 +11,16 @@ from pyspark.sql.functions import*
 
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, BooleanType, DoubleType
 
-import pandas as pd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import pyinputplus as pyip
-
 #Create Spark Session
 spark = SparkSession.builder.master("local[*]").appName("Test SQL app").getOrCreate()
 
-#Creating Spark Dataframe
-df = spark.read.json("capstone_files\cdw_sapp_custmer.json")
-#df.printSchema()
-#df.show()
-
-#converting spark datafram to pandas dataframe
-df_cust=df.toPandas() 
-
-#checking data types
-#df_cust.dtypes 
-
-#convert cust_zip to integer data type
-df_cust['CUST_ZIP']=df_cust['CUST_ZIP'].astype(int)
-
-df_cust["FIRST_NAME"]=df_cust['FIRST_NAME'].str.title() #convert first name to title case
-#df_cust
-
-df_cust["MIDDLE_NAME"]=df_cust["MIDDLE_NAME"].str.lower() #convert middle name to lowercase
-#df_cust
-
-#convert last name to title case
-df_cust["LAST_NAME"]=df_cust["LAST_NAME"].str.title() 
-#df_cust
-
-#combine 2 columns
-df_cust['FULL_STREET_ADDRESS']=df_cust[['APT_NO','STREET_NAME']].apply(' , '.join, axis=1) 
-#df_cust
-
-#drop aptno and street name columns
-df_cust.drop(['STREET_NAME','APT_NO'], axis=1, inplace=True)
-
-#format phone number into (XXX)XXX-XXXX
-#change data type from int to str
-df_cust['CUST_PHONE']=df_cust['CUST_PHONE'].astype(str)
-
-first_three=df_cust['CUST_PHONE'].str[:3] #return first 3 digits
-last_four=df_cust['CUST_PHONE'].str[3:] # return last four
-for number in df_cust['CUST_PHONE']:
-    df_cust['CUST_PHONE']='('+ '516'+ ')'+ first_three + '-' + last_four #change phont number format
-
-#df_cust
-
-#save pandas dataframe as json file
-df_cust.to_json('clean_cdw_sapp_customer.json', orient='records')
-
-#converting pandas dataframe back to spark dataframe
-dfcustomer=spark.createDataFrame(df_cust) 
-#dfcustomer.printSchema()
-#dfcustomer.show()
-
-#read branch.json and loading to spark dataframe
-dfbranch= spark.read.json('capstone_files\cdw_sapp_branch.json')
-#dfbranch.printSchema()
-#dfbranch.show()
-dfbranch.createTempView('branch_table')
-
-#format phone number and assign it to new df variable
-new_dfbranch=dfbranch.withColumn("BRANCH_PHONE2", concat(lit('(') , \
-    dfbranch['BRANCH_PHONE'].substr(1,3) , lit(')') , \
-    dfbranch['BRANCH_PHONE'].substr(4,3), lit('-'), dfbranch['BRANCH_PHONE'].substr(7,10))) 
-
-#drop original branch phone column
-new_dfbranch=new_dfbranch.drop('BRANCH_PHONE') 
-
-#rename column and assign it to new df variable
-new_dfbranch=new_dfbranch.withColumnRenamed('BRANCH_PHONE2', 'BRANCH_PHONE')
-#new_dfbranch.show()
-
-#if source value is null set default to (00000)
-new_dfbranch.withColumn('BRANCH_ZIP', when(new_dfbranch.BRANCH_ZIP.isNull(), '00000').otherwise(new_dfbranch.BRANCH_ZIP)).show()
-
-#convert branch df to pandas & save it as json file
-df_branch=new_dfbranch.toPandas()
-df_branch.to_json('cleaned_cdw_sapp_branch.json',orient='records')
-
-#read credit.json into spark dataframe
-dfcredit= spark.read.json('capstone_files\cdw_sapp_credit.json')
-#dfcredit.printSchema()
-#dfcredit.show()
-
-#convert spark dataframe to pandas
-df_credit=dfcredit.toPandas()
-
-#convert dtypes to strings
-df_credit['DAY']=df_credit['DAY'].astype(str)
-df_credit['MONTH']=df_credit['MONTH'].astype(str)
-df_credit['YEAR']=df_credit['YEAR'].astype(str)
-
-#checking dtypes
-#df_credit.dtypes
-
-#convert D to DD
-date= df_credit['DAY']
-for day in df_credit['DAY']:  
-    if len(day) < 2:
-        df_credit['DAY']= date.str.rjust(2,'0')
-#df_credit
-
-#convert M to MM
-month=df_credit['MONTH']
-for months in df_credit['MONTH']: 
-    if len(months) < 2:
-        df_credit['MONTH']= month.str.rjust(2,'0')
-#df_credit
-
-#join columns and  rename column to TIMEID
-df_credit['TIMEID']=df_credit[['YEAR','MONTH','DAY']].apply(''.join, axis=1)
-#df_credit
-
-#drop columns
-df_credit.drop(['DAY', 'MONTH', 'YEAR'], axis=1, inplace=True)
-#df_credit
-
-#save to .json file
-df_credit.to_json('cleaned_cdw_sapp_credit.json',orient='records')
-
-#converting pandas dataframe back to spark dataframe
-dfcredit=spark.createDataFrame(df_credit) 
-#dfcredit.printSchema()
-#dfcredit.show()
+credit_card= open(r'C:\Users\Learner_XZHCG221\Perscholas_Capstone_Project\credit_card.ipynb', 'r')
 
 import os
 username= os.environ.get('USER')
 my_password=os.environ.get('PASSWORD')
 
-#save to database using spark
-new_dfbranch.write.format("jdbc") \
-  .mode("append") \
-  .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
-  .option("dbtable", "cdw_sapp_branch") \
-  .option("user", username) \
-  .option("password", my_password) \
-  .save()
-
-dfcredit.write.format("jdbc") \
-  .mode("append") \
-  .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
-  .option("dbtable", "cdw_sapp_credit_card") \
-  .option("user", username) \
-  .option("password", my_password) \
-  .save()
-
-dfcustomer.write.format("jdbc") \
-  .mode("append") \
-  .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
-  .option("dbtable", "cdw_sapp_customer") \
-  .option("user", username) \
-  .option("password", my_password) \
-  .save()
-
-#reading all json files into spark dataframe 
-creditdf = spark.read.json('cleaned_cdw_sapp_credit.json')
-#creditdf.printSchema()
-custdf = spark.read.json('clean_cdw_sapp_customer.json')
-#custdf.printSchema()
-branchdf= spark.read.json('cleaned_cdw_sapp_branch.json')
-#branchdf.printSchema()
-
-#creating temp table for querying
-creditdf.createTempView("credit_table")
-custdf.createTempView("customer_table")
-branchdf.createTempView("branches_table")
-
-#joining customer table and credit table on CC NO column
-dfcust_credit =spark.sql("SELECT customer_table.CUST_ZIP, customer_table.FIRST_NAME, \
-customer_table.LAST_NAME, credit_table.BRANCH_CODE, credit_table.CREDIT_CARD_NO, credit_table.CUST_SSN, credit_table.TIMEID, \
-credit_table.TRANSACTION_ID, credit_table.TRANSACTION_TYPE, credit_table.TRANSACTION_VALUE \
-FROM customer_table \
-left join credit_table ON customer_table.CREDIT_CARD_NO = credit_table.CREDIT_CARD_NO")
-
-#joining branch table and credit table on branch code column
-dfbranch_credit =spark.sql("SELECT branches_table.BRANCH_STATE, credit_table.BRANCH_CODE, credit_table.CREDIT_CARD_NO, credit_table.CUST_SSN, credit_table.TIMEID, \
-credit_table.TRANSACTION_ID, credit_table.TRANSACTION_TYPE, credit_table.TRANSACTION_VALUE FROM branches_table \
-left join credit_table ON branches_table.BRANCH_CODE = credit_table.BRANCH_CODE")
-
-#convert to pandas
-newdfcust_credit=dfcust_credit.toPandas() 
-newdfbranch_credit=dfbranch_credit.toPandas()
-
-#saved to json file
-newdfcust_credit.to_json('cleaned_cdw_sapp_credit_customer.json',orient='records')
-newdfbranch_credit.to_json('cleaned_cdw_sapp_branch_credit.json', orient='records')
-
-#################################################################################################################################
-##################################################################################################################################
 #Transaction Module
-
-#6511
-#month 11
 def display_transactions_given_zip_month_year():
     import json
     new_credit=open('cleaned_cdw_sapp_credit_customer.json') #open json
@@ -262,8 +80,6 @@ def display_transaction_num_and_total_value_given_state():
        print('Number of transactions:', len(transactions_by_state), f'Total transaction value:{sum_values:.2f}')
 #display_transaction_num_and_total_value_given_state()
 
-###############################################################################################################################
-#################################################################################################################################
 #Customer Details
 def check_account_details():
     import json
@@ -428,8 +244,6 @@ def display_transaction_between_two_dates():
        print(sorted_transactions)
 #display_transaction_between_two_dates()
 
-###################################################################################################################
-######################################################################################################################
 #Visualizations
 
 #Find and plot which transaction type has a high rate of transactions.
@@ -490,74 +304,46 @@ def total_transactions_per_customer():
     #grouping by ssn and suming all transactions
     transaction_sum=df_credit.groupby('CUST_SSN')['TRANSACTION_VALUE'].sum().reset_index()
     #set ssn to index
-    #transaction_sum=transaction_sum.set_index('CUST_SSN')
+    transaction_sum=transaction_sum.set_index('CUST_SSN')
     #sort my transaction values descending
     transaction_sum= transaction_sum.sort_values('TRANSACTION_VALUE', ascending=False)
-    #print(transaction_sum)
-    #top 10 customers
-    top_10=transaction_sum.head(10)
-    print(top_10)
+    print(transaction_sum)
     #get index of highest treansaction sum
     highest_transaction= transaction_sum.iloc[0]
     #convert it to an integer
-    highest_customer= highest_transaction['CUST_SSN']
+    highest_transaction= int(highest_transaction)
     #highlight branch with the highest transaction sum
     colors=[]
-    for id in top_10.index:
-        if id == top_10.index[0]:
+    for b in transaction_sum['TRANSACTION_VALUE']:
+        if transaction_sum.iloc[0]['TRANSACTION_VALUE'] ==b :
             colors.append('red')
         else:
             colors.append('lightsteelblue')
+    #change widths
+    widths=[]
+    for w in transaction_sum['TRANSACTION_VALUE']:
+        if transaction_sum.iloc[0]['TRANSACTION_VALUE'] == w:
+            widths.append(8.0)
+        else:
+            widths.append(5.0)
 
-    print(f"Customer with SSN {highest_customer}, has the highest transaction amount: {transaction_sum.iloc[0]['TRANSACTION_VALUE']:.2f}")
+    print(f"Customer with SSN {123451125}, has the highest transaction amount: {transaction_sum.iloc[0]['TRANSACTION_VALUE']:.2f}")
 
     ax=plt.gca()#get axis
     ax.set_frame_on(False)#turn off spines
 
-    plt.bar(range(len(top_10)), top_10['TRANSACTION_VALUE'], color=colors)
+    plt.bar(transaction_sum.index, transaction_sum['TRANSACTION_VALUE'], color=colors, width=widths)
 
-    plt.xticks(range(len(top_10)), top_10['CUST_SSN'], rotation=90)
+    plt.xticks(rotation=90)
     plt.tick_params(bottom = False, left= False) #turn of tick marks
-    plt.ticklabel_format(axis='y', useOffset=False, style='plain') #turns off scientific notation
-    #plt.xticks([123451125, 123452783, 123453486, 123458668, 123456678, 123452026, 123452518, 123454933, 123457547, 123452085])
-    #plt.xlim([123451125, 123458668])
-    plt.xlabel('Customer ID')
+    plt.ticklabel_format(useOffset=False, style='plain') #turns off scientific notation
+    plt.subplot().set_xlim([123451125, 123451837])
+    plt.xlabel('Customer SSN')
     plt.ylabel('Sum of Transactions')
     plt.title('Sum of Transactions per Customer')
-
-    #plt.axvline(x=highest_customer, color='red')
     plt.show()
 #total_transactions_per_customer()
 
-###############################################################################################################
-################################################################################################################
-#Loan Application
-
-import requests
-import json
-url = "https://raw.githubusercontent.com/platformps/LoanDataset/main/loan_data.json"
-response=requests.get(url)
-view_response= response.json()
-
-#print(response.status_code) #get status code
-#print(view_response)
-
-#Create Spark Dataframe
-loan_data=spark.createDataFrame(view_response)
-#loan_data.printSchema()
-#loan_data.show()
-
-#load to database
-loan_data.write.format("jdbc") \
-  .mode("append") \
-  .option("url", "jdbc:mysql://localhost:3306/creditcard_capstone") \
-  .option("dbtable", "cdw_sapp_loan_application") \
-  .option("user", username) \
-  .option("password", my_password) \
-  .save()
-
-#################################################################################################
-###################################################################################################
 #Visualization
 #Find and plot the percentage of applications approved for self-employed applicants.
 def approved_self_employed_app():
@@ -670,8 +456,6 @@ def highest_branch_total():
     plt.show()
 #def highest_branch_total()
 
-##############################################################################################################
-################################################################################################################
 #Front End User Console
 print("Menu")
 
@@ -728,4 +512,3 @@ while True:
                 print('Please make a valid selection')
     elif menu == 'Exit':
         break
-
